@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Http;
 use PragmaRX\Google2FA\Google2FA;
 use Carbon\Carbon;
 
+
 class TestController extends Controller
 {
     protected $kakaoApi;
