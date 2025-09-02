@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use Aws\S3\S3Client;
+use Illuminate\Support\Facades\Config;
 
 class S3Service
 {
