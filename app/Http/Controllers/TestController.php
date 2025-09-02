@@ -38,6 +38,6 @@ class TestController extends Controller
     }
    public function index()
     {
-            Staking::distributeDaily();
+          dd('123');
     }
 }
