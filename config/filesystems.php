@@ -51,6 +51,9 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'), // ← 추가
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false), // ← 추가
+            'throw' => false, // ← 추가(예외 전파 비활성, 필요 시 true로)
         ],
     ],
 
