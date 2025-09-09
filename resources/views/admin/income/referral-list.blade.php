@@ -15,20 +15,17 @@
                         </li>
                         {{--
                         <li class="nav-item" role="presentation">
-                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'trading_profit'])) }}" class="nav-link {{ Request('type') == 'trading_profit' ? 'active' : '' }}">트레이딩</a>
+                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'staking_reward'])) }}" class="nav-link {{ Request('type') == 'staking_reward' ? 'active' : '' }}">스테이킹</a>
                         </li>
                         --}}
                         <li class="nav-item" role="presentation">
-                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'staking_reward'])) }}" class="nav-link {{ Request('type') == 'staking_reward' ? 'active' : '' }}">스테이킹</a>
+                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'referral_bonus'])) }}" class="nav-link {{ Request('type') == 'referral_bonus' ? 'active' : '' }}">추천보너스</a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'subscription_bonus'])) }}" class="nav-link {{ Request('type') == 'subscription_bonus' ? 'active' : '' }}">DAO</a>
+                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'referral_matching'])) }}" class="nav-link {{ Request('type') == 'referral_matching' ? 'active' : '' }}">추천매칭</a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'referral_bonus'])) }}" class="nav-link {{ Request('type') == 'referral_bonus' ? 'active' : '' }}">추천 보너스</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'rank_bonus'])) }}" class="nav-link {{ Request('type') == 'rank_bonus' ? 'active' : '' }}">직급 보너스</a>
+                            <a href="{{ route('admin.income.list', array_merge(request()->query(), ['type' => 'rank_bonus'])) }}" class="nav-link {{ Request('type') == 'rank_bonus' ? 'active' : '' }}">승급보너스</a>
                         </li>
                     </ul>
                 </div>
@@ -87,17 +84,17 @@
                         <div class="table-responsive">
                             <table class="table text-nowrap align-middle mb-0 table-striped table-hover">
                                 <thead>
-                                    <tr class="border-2 border-bottom border-primary border-0"> 
+                                    <tr class="border-2 border-bottom border-primary border-0">
                                         <th scope="col" class="text-center">번호</th>
                                         <th scope="col" class="text-center">UID</th>
                                         <th scope="col" class="text-center">이름</th>
                                         <th scope="col" class="text-center">등급</th>
                                         <th scope="col" class="text-center">종류</th>
                                         <th scope="col" class="text-center">보너스</th>
+                                        <th scope="col" class="text-center">상태</th>
                                         <th scope="col" class="text-center">산하ID</th>
-                                        <th scope="col" class="text-center">스테이킹 수량</th>
-                                        <th scope="col" class="text-center">스테이킹 일자</th>
-                                        <th scope="col" class="text-center">뎁스</th>
+                                        <th scope="col" class="text-center">입금금액</th>
+                                        <th scope="col" class="text-center">일자</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-group-divider">
@@ -110,10 +107,27 @@
                                         <td scope="col" class="text-center">{{ $value->user->profile->grade->name }}</td>
                                         <td scope="col" class="text-center">{{ $value->income->coin->name }}</td>
                                         <td scope="col" class="text-center">{{ $value->amount }}</td>
+                                        <td scope="col" class="text-center">
+                                            @switch($value->status)
+                                                @case('pending')
+                                                    {{ __('신청') }}
+                                                    @break
+                                                @case('waiting')
+                                                    {{ __('대기') }}
+                                                @break
+                                                @case('completed')
+                                                    {{ __('완료') }}
+                                                    @break
+                                                @case('canceled')
+                                                    {{ __('취소') }}
+                                                    @break
+                                                @default
+                                                    {{ __('환불') }}
+                                            @endswitch
+                                        </td>
                                         <td scope="col" class="text-center">{{ $value->referralBonus->referrer_id }}</td>
-                                        <td scope="col" class="text-center">{{ $value->referralBonus->staking->amount }}</td>
+                                        <td scope="col" class="text-center">{{ $value->referralBonus->deposit->amount }}</td>
                                         <td scope="col" class="text-center">{{ $value->created_at }}</td>
-                                        <td scope="col" class="text-center">{{ $value->referralBonus->referrer->profile->level - $value->user->profile->level }}</td>
                                     </tr>
                                     @endforeach
                                     @else

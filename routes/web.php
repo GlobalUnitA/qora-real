@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\OtpController;
 
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Profile\DashboardController;
 use App\Http\Controllers\Profile\KycVerificationController;
 
 use App\Http\Controllers\Asset\AssetController;
@@ -74,7 +75,6 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
         return redirect()->route('home');
     });
 
-
     Route::prefix('verify-otp')->group(function () {
         Route::get('/', [OtpController::class, 'index'])->name('otp');
         Route::post('verify', [OtpController::class, 'verify'])->name('otp.verify');
@@ -89,6 +89,8 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
         Route::post('update', [ProfileController::class, 'update'])->name('profile.update');
         Route::get('/password', [ProfileController::class, 'password'])->name('profile.password');
         Route::post('/password/update', [ProfileController::class, 'passwordUpdate'])->name('profile.password.update');
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('profile.dashboard');
 
         Route::prefix('kyc')->group(function () {
             Route::get('/', [KycVerificationController::class, 'index'])->name('kyc');
@@ -141,9 +143,9 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
             });
         });
         Route::prefix('withdrawal')->group(function () {
-            Route::middleware(['otp'])->group(function () {
+            //Route::middleware(['otp'])->group(function () {
                 Route::get('/', [IncomeWithdrawalController::class, 'index'])->name('income.withdrawal');
-            });
+            //});
             Route::post('store', [IncomeWithdrawalController::class, 'store'])->name('income.withdrawal.store');
             Route::get('complete/{id}', [IncomeWithdrawalController::class, 'complete'])->name('income.withdrawal.complete');
             Route::prefix('list')->group(function () {
@@ -188,26 +190,3 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
 Route::get('/change-language/{locale}', [LanguageController::class, 'changeLanguage'])->name('change.language');
 Route::post('/popup/hide', [PopupController::class, 'hide'])->name('popup.hide');
 Route::post('/file/presigned-url', [FileUploadController::class, 'generatePresignedUrl'])->name('file.presigned-url');
-
-Route::get('/s3-test', function () {
-    // 1️⃣ config 확인
-    $s3Config = config('filesystems.disks.s3');
-
-    dd([
-        'S3 Config' => $s3Config,
-        'AWS_ACCESS_KEY_ID env' => env('AWS_ACCESS_KEY_ID'),
-        'AWS_SECRET_ACCESS_KEY env' => env('AWS_SECRET_ACCESS_KEY'),
-        'AWS_DEFAULT_REGION env' => env('AWS_DEFAULT_REGION'),
-        'AWS_BUCKET env' => env('AWS_BUCKET'),
-    ]);
-
-    // 2️⃣ 실제 연결 테스트 (원하면 주석 해제)
-    /*
-    try {
-        Storage::disk('s3')->put('test.txt', 'S3 연결 테스트');
-        return 'S3 업로드 성공!';
-    } catch (\Exception $e) {
-        return 'S3 연결 실패: ' . $e->getMessage();
-    }
-    */
-});

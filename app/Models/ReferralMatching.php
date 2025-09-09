@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReferralBonus extends Model
+class ReferralMatching extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'deposit_id',
+        'bonus_id',
         'transfer_id',
         'referrer_id',
-        'bonus',
+        'matching',
     ];
-
+    
     protected $casts = [
-        'bonus' => 'decimal:9',
+        'matching' => 'decimal:9',
     ];
 
     public function user()
@@ -26,14 +26,14 @@ class ReferralBonus extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function deposit()
-    {
-        return $this->belongsTo(AssetTransfer::class, 'deposit_id', 'id');
-    }
-
     public function transfer()
     {
         return $this->belongsTo(IncomeTransfer::class, 'transfer_id', 'id');
+    }
+
+    public function bonus()
+    {
+        return $this->belongsTo(ReferralBonus::class, 'bonus_id', 'id');
     }
 
     public function referrer()

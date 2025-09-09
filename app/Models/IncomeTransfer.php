@@ -67,6 +67,11 @@ class IncomeTransfer extends Model
         return $this->hasOne(ReferralBonus::class, 'transfer_id', 'id');
     }
 
+     public function referralMatching()
+    {
+        return $this->hasOne(ReferralMatching::class, 'transfer_id', 'id');
+    }
+
     public function rankBonus()
     {
         return $this->hasOne(RankBonus::class, 'transfer_id', 'id');
@@ -80,27 +85,16 @@ class IncomeTransfer extends Model
     public function getTypeTextAttribute()
     {
         switch ($this->type) {
-            case 'deposit' :
-                return __('asset.internal_transfer');
-                break;
             case 'withdrawal' :
                 return __('asset.external_withdrawal');
-                break;
-            case 'trading_profit' :
-                return __('asset.trading_profit');
-                break;
-            case 'subscription_bonus' :
-                return __('asset.subscription_bonus');
-                break;
             case 'referral_bonus' :
                 return __('asset.referral_bonus');
-                break;
+            case 'referral_matching' :
+                return __('asset.referral_bonus_matching');
             case 'rank_bonus' :
                 return __('asset.rank_bonus');
-                break;
-            case 'staking_reward' :
-                return __('asset.staking_profit');
-                break;
+            default :
+                return __('asset.internal_transfer');
         }
     }
 

@@ -204,50 +204,136 @@ class UserProfile extends Model
 
     }
 
-    public function referralBonus($staking)
+    public function referralBonus($deposit)
     {
-        $parents = $this->getParentTree(20);
+        try {
+
+            DB::beginTransaction();
+
+            $parents = $this->getParentTree(20);
+
+            foreach ($parents as $level => $parent_profile) {
+
+                if ($parent_profile->is_valid === 'n') continue;
+
+                $policy = ReferralPolicy::where('grade_id', $parent_profile->grade->id)->first();
+
+                if (!$policy) continue;
+
+                $rate_key = "level_{$level}_rate";
+
+                $bonus = $deposit->amount * $policy->$rate_key / 100;
+
+                if ($bonus <= 0) continue;
+
+                $income = Income::where('user_id', $parent_profile->user_id)->where('coin_id', 1)->first();
+
+                $transfer = IncomeTransfer::create([
+                    'user_id'   => $parent_profile->user_id,
+                    'income_id'  => $income->id,
+                    'type' => 'referral_bonus',
+                    'status' => 'completed',
+                    'amount'    => $bonus,
+                    'actual_amount' => $bonus,
+                    'before_balance' => $income->balance,
+                    'after_balance' => $income->balance + $bonus,
+                ]);
+
+                $referral_bonus = ReferralBonus::create([
+                    'user_id'   => $parent_profile->user_id,
+                    'referrer_id' => $this->user_id,
+                    'deposit_id'   => $deposit->id,
+                    'transfer_id'  => $transfer->id,
+                    'bonus' => $bonus,
+                ]);
+
+                $income->increment('balance', $bonus);
+
+                Log::channel('bonus')->info('Success referral bonus', [
+                    'user_id' => $parent_profile->user_id,
+                    'referrer_id' => $this->user_id,
+                    'level' => $level,
+                    'deposit_id' => $deposit->id,
+                    'bonus_id' => $referral_bonus->id,
+                    'transfer_id' => $transfer->id,
+                    'bonus' => $bonus,
+                    'before_balance' => $transfer->before_balance,
+                    'after_balance' => $transfer->after_balance,
+                ]);
+
+                $this->referralMatching($referral_bonus);
+            }
+
+            DB::commit();
+
+        }  catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::channel('bonus')->error('Referral bonus transaction failed', [
+                'deposit_id' => $deposit->id,
+                'user_id' => $this->user_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    }
+
+    public function referralMatching($bonus)
+    {
+        $user = $bonus->user->profile;
+        $parents = $user->getParentTree(20);
 
         foreach ($parents as $level => $parent_profile) {
 
-            if ($parent_profile->is_valid === 'n') {
-                continue;
-            }
+            if ($parent_profile->is_valid === 'n') continue;
 
-            $policy = ReferralPolicy::where('grade_id', $parent_profile->grade->id)->first();
+            $policy = ReferralMatchingPolicy::where('grade_id', $parent_profile->grade->id)->first();
+
+            if (!$policy) continue;
 
             $rate_key = "level_{$level}_rate";
 
-            $bonus = $staking->amount * $policy->$rate_key / 100;
+            $matching = $bonus->transfer->amount * $policy->$rate_key / 100;
 
-            if ($bonus <= 0) {
-                continue;
-            }
+            if ($matching <= 0) continue;
 
-            $income = Income::where('user_id', $parent_profile->user_id)->where('coin_id', $staking->income->coin_id)->first();
+            $income = Income::where('user_id', $parent_profile->user_id)
+                ->where('coin_id', 1)
+                ->first();
 
             $transfer = IncomeTransfer::create([
                 'user_id'   => $parent_profile->user_id,
                 'income_id'  => $income->id,
-                'type' => 'referral_bonus',
+                'type' => 'referral_matching',
                 'status' => 'completed',
-                'amount'    => $bonus,
-                'actual_amount' => $bonus,
+                'amount'    => $matching,
+                'actual_amount' => $matching,
                 'before_balance' => $income->balance,
-                'after_balance' => $income->balance + $bonus,
+                'after_balance' => $income->balance + $matching,
             ]);
 
-            ReferralBonus::create([
+            $referral_matching = ReferralMatching::create([
                 'user_id'   => $parent_profile->user_id,
-                'referrer_id' => $this->user_id,
-                'staking_id'   => $staking->id,
+                'referrer_id' => $user->user_id,
+                'bonus_id'   => $bonus->id,
                 'transfer_id'  => $transfer->id,
-                'bonus' => $bonus,
+                'matching' => $matching,
             ]);
 
-            $income->increment('balance', $bonus);
+            $income->increment('balance', $matching);
 
-            Log::channel('bonus')->info('Success referral bonus', ['user_id' => $this->user_id, 'bonus' => $bonus, 'transfer_id' => $transfer->id]);
+            Log::channel('bonus')->info('Success referral matching', [
+                'user_id' => $parent_profile->user_id,
+                'referrer_id' => $user->user_id,
+                'level' => $level,
+                'bonus_id' => $bonus->id,
+                'matching_id' => $referral_matching->id,
+                'transfer_id' => $transfer->id,
+                'matching' => $matching,
+                'before_balance' => $transfer->before_balance,
+                'after_balance' => $transfer->after_balance,
+            ]);
         }
     }
 
@@ -281,7 +367,7 @@ class UserProfile extends Model
                 $level = $child->grade->level;
                 return $level >= $direct_min_level;
             })->count();
-            
+
             if ($direct_met_count < $direct_required_count) {
                 Log::channel('bonus')->info("Rank bonus not paid - User ID: {$this->user_id}, Reason: Insufficient qualified directs for required levels.");
                 continue;
@@ -335,7 +421,7 @@ class UserProfile extends Model
                     'bonus'          => $bonus,
                 ]);
 
-                $income->increment('balance', $bonus);  
+                $income->increment('balance', $bonus);
 
                 DB::commit();
 
@@ -430,7 +516,7 @@ class UserProfile extends Model
         if (
             $referral_count >= $next_policy->referral_count &&
             $self_sales >= $next_policy->self_sales &&
-            $group_sales >= $next_policy->group_sales  
+            $group_sales >= $next_policy->group_sales
         ) {
             $result = UserProfile::where('id', $this->id)->update([
                 'grade_id' => $next_grade->id

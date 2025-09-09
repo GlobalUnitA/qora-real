@@ -22,9 +22,9 @@ class IncomeController extends Controller
 
     public function __construct()
     {
-        
+
     }
-   
+
     public function list(Request $request)
     {
         $list = IncomeTransfer::where('income_transfers.type', $request->input('type', 'deposit'))
@@ -65,7 +65,7 @@ class IncomeController extends Controller
             }
         })
         ->when($request->filled('start_date') && $request->filled('end_date'), function ($query) use ($request) {
-            $start = Carbon::parse($request->start_date)->startOfDay(); 
+            $start = Carbon::parse($request->start_date)->startOfDay();
             $end = Carbon::parse($request->end_date)->endOfDay();
 
             $query->whereBetween('income_transfers.created_at', [$start, $end]);
@@ -73,36 +73,14 @@ class IncomeController extends Controller
         ->latest()
         ->orderBy('id', 'desc')
         ->paginate(10);
-    
-        switch ($request->type) {
-            case 'withdrawal' :
-                return view('admin.income.withdrawal-list', compact('list'));
-            break;
 
-            case 'trading_profit' :
-                return view('admin.income.profit-list', compact('list'));
-            break;
-
-            case 'staking_reward' :
-                return view('admin.income.reward-list', compact('list'));
-            break;
-
-            case 'subscription_bonus' :
-                return view('admin.income.subscription-list', compact('list'));
-            break;
-
-            case 'referral_bonus' :
-                return view('admin.income.referral-list', compact('list'));
-            break;
-
-            case 'rank_bonus' :
-                return view('admin.income.rank-list', compact('list'));
-            break;
-        
-            default :
-                return view('admin.income.deposit-list', compact('list'));
-            break;
-        }        
+        return match ($request->type) {
+            'withdrawal' => view('admin.income.withdrawal-list', compact('list')),
+            'referral_bonus' => view('admin.income.referral-list', compact('list')),
+            'referral_matching' => view('admin.income.referral-matching-list', compact('list')),
+            'rank_bonus' => view('admin.income.rank-list', compact('list')),
+            default => view('admin.income.deposit-list', compact('list')),
+        };
     }
 
     public function view($id)
@@ -114,16 +92,16 @@ class IncomeController extends Controller
 
     public function update(Request $request)
     {
-        
+
         DB::beginTransaction();
 
         try {
 
             $transfer = IncomeTransfer::find($request->id);
-        
+
             $transfer->update(['memo' => $request->memo]);
-            
-            DB::commit(); 
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -142,7 +120,7 @@ class IncomeController extends Controller
                 'message' => '예기치 못한 오류가 발생했습니다.',
             ]);
         }
-        
+
     }
 
     public function export(Request $request)
