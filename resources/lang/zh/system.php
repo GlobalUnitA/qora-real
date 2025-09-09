@@ -48,5 +48,5 @@ return array (
   'stock_amount' => '持有数量',
   'dismiss_today' => '今日不再提醒',
   'close' => '关闭',
-  'modify_notice' => '',
+  'modify_notice' => '修改成功。',
 );

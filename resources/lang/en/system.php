@@ -43,9 +43,9 @@ return array (
   'unit_day' => 'Day',
   'period' => 'Duration',
   'started_at' => 'Start Date',
-  'ended_at' => 'Closing',
+  'ended_at' => 'End Date',
   'stock_amount' => 'Holdings',
   'dismiss_today' => 'Don\'t show again today',
   'close' => 'Close',
-  'modify_notice' => '',
+  'modify_notice' => 'Successfully Updated.',
 );
