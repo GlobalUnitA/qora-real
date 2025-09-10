@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close border-0" data-bs-dismiss="modal"></button>
             </div>
             <div id="confirmMessage" class="modal-body fs-5 px-4"></div>
             <div class="modal-footer">

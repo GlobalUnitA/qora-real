@@ -7,7 +7,7 @@
     <h6 class="text-white mb-4 px-1">{{ __('asset.withdrawal') }}</h6>
     <div class="m-0 px-1">
         <a href="{{ route('asset.withdrawal.list') }}">
-            <h5 class="btn btn-primary border-0 m-0" style="background: linear-gradient(to right, #00d8a0, #00b084);">{{ __('asset.withdrawal_list') }}</h5>
+            <h5 class="btn btn-primary border-0 m-0 text-black" style="background: linear-gradient(to right, #00f2bc, #67eff9);">{{ __('asset.withdrawal_list') }}</h5>
         </a>
     </div>
 </header>
@@ -17,7 +17,7 @@
             @csrf
             <fieldset>
                 <legend class="mb-3 fs-4 text-body">{{ __('asset.select_withdrawal_asset_guide') }}</legend>
-                <div class="d-grid d-grid-col-2 mb-3">                    
+                <div class="d-grid d-grid-col-2 mb-3">
                 @foreach ($assets as $asset)
                     <div class="selectedAsset">
                         <input type="radio" class="btn-check" name="asset" value="{{ $asset->encrypted_id }}" id="{{ $asset->coin->code }}" autocomplete="off" data-balance="{{ $asset->balance }}">
@@ -28,8 +28,8 @@
                         <input type="hidden" class="tax_rate" value="{{ $asset->tax_rate }}">
                         <input type="hidden" class="fee_rate" value="{{ $asset->fee_rate }}">
                     </div>
-                @endforeach                                  
-                </div>                
+                @endforeach
+                </div>
             </fieldset>
             <div class="my-4">
                 <label class="form-label fs-4 text-body">{{ __('asset.withdrawal_amount_guide') }}</label>
@@ -52,7 +52,7 @@
                         <p class="mb-1">- {{ __('asset.withdrawal_tax_guide') }}</p>
                     </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-3 mb-4 fs-4">{{ __('asset.withdrawal') }}</button>                                
+            <button type="submit" class="btn btn-primary w-100 py-3 mb-4 fs-4">{{ __('asset.withdrawal') }}</button>
         </form>
     </div>
 </main>

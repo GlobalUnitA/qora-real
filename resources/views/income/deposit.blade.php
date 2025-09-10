@@ -7,7 +7,7 @@
     <h6 class="text-white mb-4 px-1">{{ __('asset.internal_transfer') }}</h6>
     <div class="m-0 px-1">
         <a href="{{ route('income.deposit.list') }}">
-            <h5 class="btn btn-outline-light m-0">{{ __('asset.transfer_list') }}</h5>
+            <h5 class="btn btn-primary border-0 m-0 text-black" style="background: linear-gradient(to right, #00f2bc, #67eff9);">{{ __('asset.transfer_list') }}</h5>
         </a>
     </div>
 </header>
@@ -16,8 +16,8 @@
         <form method="POST" id="depositForm" action="{{ route('income.deposit.store') }}">
             @csrf
             <fieldset>
-                <legend class="fs-4 text-body mb-3">{{ __('asset.select_transfer_asset_guide') }}</legend>     
-                <div class="d-grid d-grid-col-2 mb-3"> 
+                <legend class="fs-4 text-body mb-3">{{ __('asset.select_transfer_asset_guide') }}</legend>
+                <div class="d-grid d-grid-col-2 mb-3">
                 @foreach ($incomes as $income)
                     <div>
                         <input type="radio" class="btn-check" name="income" value="{{ $income->encrypted_id  }}" id="{{ $income->coin->code }}" autocomplete="off" data-balance="{{ $income->balance }}">
@@ -27,8 +27,8 @@
                         </label>
                     </div>
                 @endforeach
-                </div>  
-            </fieldset>            
+                </div>
+            </fieldset>
             <div class="my-4">
                 <label class="form-label text-body fs-4">{{ __('asset.transfer_amount_guide') }}</label>
                 <input type="text" name="amount" id="amount" placeholder="0" class="form-control mb-3 text-body">
@@ -42,7 +42,7 @@
             </div>
             <button type="submit" class="btn btn-primary w-100 py-3 mb-4 fs-4">{{ __('asset.transfer') }}</button>
         </form>
-    </div>    
+    </div>
 </main>
 @endsection
 

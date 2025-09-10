@@ -1,6 +1,6 @@
 <aside class="left-sidebar">
     <div>
-        
+
         <div class="mt-5 mb-5">
             <div class="d-flex align-items-center justify-content-center mb-3">
                 <a href="{{ route('admin') }}" class="text-nowrap logo-img">
@@ -16,7 +16,7 @@
                 </form>
             </div>
         </div>
-   
+
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
             <ul id="sidebarnav">
                 <li class="nav-small-cap">
@@ -105,13 +105,21 @@
                         <span class="hide-menu">트레이딩</span>
                     </a>
                 </li>
-                --}}
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('admin.staking.list', ['status' => 'pending']) }}" aria-expanded="false">
                         <span>
                             <i class="ti ti-chart-bar"></i>
                         </span>
                         <span class="hide-menu">스테이킹</span>
+                    </a>
+                </li>
+                --}}
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.mining.list', ['status' => 'pending']) }}" aria-expanded="false">
+                        <span>
+                            <i class="ti ti-diamond"></i>
+                        </span>
+                        <span class="hide-menu">마이닝</span>
                     </a>
                 </li>
                 @endif
@@ -159,7 +167,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ route('admin.income.policy', ['mode' => 'subscription']) }}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ route('admin.income.policy', ['mode' => 'referral']) }}" aria-expanded="false">
                         <span>
                             <i class="ti ti-gift-off"></i>
                         </span>
@@ -175,13 +183,21 @@
                         <span class="hide-menu">트레이딩 정책</span>
                     </a>
                 </li>
-                --}}
                 <li class="sidebar-item">
                     <a class="sidebar-link" href="{{ route('admin.staking.policy', ['id' => '1']) }}" aria-expanded="false">
                         <span>
                             <i class="ti ti-chart-bar-off"></i>
                         </span>
                         <span class="hide-menu">스테이킹 정책</span>
+                    </a>
+                </li>
+                --}}
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ route('admin.mining.policy', ['id' => '1']) }}" aria-expanded="false">
+                        <span>
+                            <i class="ti ti-diamond-off"></i>
+                        </span>
+                        <span class="hide-menu">마이닝 정책</span>
                     </a>
                 </li>
                 @endif
@@ -232,4 +248,4 @@
             </ul>
         </nav>
     </div>
-</aside>        
+</aside>

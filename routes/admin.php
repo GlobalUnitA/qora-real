@@ -31,6 +31,9 @@ use App\Http\Controllers\Admin\Trading\PolicyController as TradingPolicyControll
 use App\Http\Controllers\Admin\Staking\StakingController;
 use App\Http\Controllers\Admin\Staking\PolicyController as StakingPolicyController;
 
+use App\Http\Controllers\Admin\Mining\MiningController;
+use App\Http\Controllers\Admin\Mining\PolicyController as MiningPolicyController;
+
 use App\Http\Controllers\Admin\Board\BoardController;
 use App\Http\Controllers\Admin\Board\PostController;
 use App\Http\Controllers\Admin\Board\CommentController;
@@ -68,7 +71,7 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
                 Route::get('/', [GradeController::class, 'index'])->name('admin.user.grade');
                 Route::post('store', [GradeController::class, 'store'])->name('admin.user.grade.store');
                 Route::post('delete', [GradeController::class, 'delete'])->name('admin.user.grade.delete');
-            });    
+            });
             Route::prefix('policy')->group(function () {
                 Route::get('/', [UserPolicyController::class, 'index'])->name('admin.user.policy');
                 Route::post('update', [UserPolicyController::class, 'update'])->name('admin.user.policy.update');
@@ -152,7 +155,7 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
                 });
             });
         });
-   
+
         Route::prefix('staking')->group(function () {
             Route::get('list', [StakingController::class, 'list'])->name('admin.staking.list');
             Route::middleware(['check_admin_level:3'])->group(function () {
@@ -162,6 +165,19 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
                     Route::get('{mode}/{id?}', [StakingPolicyController::class, 'view'])->name('admin.staking.policy.view');
                     Route::post('store', [StakingPolicyController::class, 'store'])->name('admin.staking.policy.store');
                     Route::post('update', [StakingPolicyController::class, 'update'])->name('admin.staking.policy.update');
+                });
+            });
+        });
+
+        Route::prefix('mining')->group(function () {
+            Route::get('list', [MiningController::class, 'list'])->name('admin.mining.list');
+            Route::middleware(['check_admin_level:3'])->group(function () {
+                Route::prefix('policy')->group(function () {
+                    Route::get('/', [MiningPolicyController::class, 'index'])->name('admin.mining.policy');
+                    Route::get('export', [MiningPolicyController::class, 'export'])->name('admin.mining.policy.export');
+                    Route::get('{mode}/{id?}', [MiningPolicyController::class, 'view'])->name('admin.mining.policy.view');
+                    Route::post('store', [MiningPolicyController::class, 'store'])->name('admin.mining.policy.store');
+                    Route::post('update', [MiningPolicyController::class, 'update'])->name('admin.mining.policy.update');
                 });
             });
         });
@@ -184,7 +200,7 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
                 Route::post('update', [CommentController::class, 'update'])->name('admin.post.comment.update');
             });
         });
-    });  
+    });
 
     Route::prefix('language')->group(function () {
         Route::get('{mode}', [LanguageController::class, 'index'])->name('admin.language');
@@ -193,15 +209,15 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
     });
 
     Route::prefix('manager')->group(function () {
-        Route::get('view/{id}', [ManagerController::class, 'view'])->name('admin.manager.view'); 
+        Route::get('view/{id}', [ManagerController::class, 'view'])->name('admin.manager.view');
         Route::post('update', [ManagerController::class, 'update'])->name('admin.manager.update');
 
         Route::middleware(['check_admin_level:4'])->group(function () {
-            Route::get('/', [ManagerController::class, 'list'])->name('admin.manager.list'); 
+            Route::get('/', [ManagerController::class, 'list'])->name('admin.manager.list');
             Route::get('create', [ManagerController::class, 'create'])->name('admin.manager.create');
             Route::post('store', [ManagerController::class, 'store'])->name('admin.manager.store');
             Route::post('delete', [ManagerController::class, 'delete'])->name('admin.manager.delete');
             Route::get('export', [ManagerController::class, 'export'])->name('admin.manager.export');
         });
     });
-}); 
+});

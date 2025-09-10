@@ -9,7 +9,7 @@
                     <h5 class="card-title">관리자 추가</h5>
                 </div>
                 <form method="POST" action="{{ route('admin.manager.store') }}" id="ajaxForm">
-                    @csrf    
+                    @csrf
                     <hr>
                     <table class="table table-bordered mt-5 mb-5">
                         <tbody>
@@ -28,7 +28,7 @@
                                 <td class="align-middle">
                                     <input type="text" name="name" class="form-control w-50 required" required>
                                 </td>
-                                
+
                                 <th class="text-center align-middle">레벨</th>
                                 <td class="align-middle">
                                     <select name="admin_level" class="form-control w-25 required" required>
@@ -56,13 +56,13 @@
                                         <tr>
                                             <th class="text-center algin-middle">2레벨</th>
                                             <td class="algin-middle">
-                                                자산 관리, 수익 관리, 트레이딩, 스테이킹, 게시글 관리(이용약관, 이벤트, 회사소개)
+                                                자산 관리, 수익 관리, 마이닝, 게시글 관리(이용약관, 이벤트, 회사소개)
                                             </td>
                                         </tr>
                                         <tr>
                                             <th class="text-center algin-middle">3레벨</th>
                                             <td class="algin-middle">
-                                                회원 등급 관리, 코인 관리, 자산 수동입금, 월렛, 게시판 관리, 정책 관리, 언어 설정(기본, 메시지) 
+                                                회원 등급 관리, 코인 관리, 자산 수동입금, 게시판 관리, 정책 관리, 언어 설정(기본, 메시지)
                                             </td>
                                         </tr>
                                     </table>
