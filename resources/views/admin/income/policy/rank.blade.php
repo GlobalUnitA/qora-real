@@ -5,13 +5,13 @@
     <div class="container-fluid" >
         <ul class="nav nav-tabs mt-3" id="tableTabs" role="tablist" >
             <li class="nav-item" role="presentation">
-                <a href="{{ route('admin.income.policy', ['mode' => 'subscription']) }}" class="nav-link">
-                    DAO
+                <a href="{{ route('admin.income.policy', ['mode' => 'referral']) }}" class="nav-link">
+                    추천보너스
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                <a href="{{ route('admin.income.policy', ['mode' => 'referral']) }}" class="nav-link">
-                    추천보너스
+                <a href="{{ route('admin.income.policy', ['mode' => 'referral_matching']) }}" class="nav-link">
+                    추천매칭
                 </a>
             </li>
             <li class="nav-item" role="presentation">
@@ -65,7 +65,7 @@
                                         </div>
                                         <div class="col-2">
                                             <input type="text" name="conditions[direct][referral_count]" value="{{ $val->conditions['direct']['referral_count'] }}" class="form-control form-control-sm"/>
-                                        </div>                        
+                                        </div>
                                     </div>
                                     <div class="row gx-3 align-items-center mb-2 add_condition_{{ $key+1 }}">
                                         <div class="col-2">
@@ -82,7 +82,7 @@
                                         </div>
                                         <div class="col-2">
                                             <input type="text" name="conditions[all][referral_count]" value="{{ $val->conditions['all']['referral_count'] }}" class="form-control form-control-sm"/>
-                                        </div>                        
+                                        </div>
                                     </div>
                                     @endif
                                 </td>
