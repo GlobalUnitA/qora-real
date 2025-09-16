@@ -17,22 +17,29 @@ class Mining extends Model
         'asset_id',
         'refund_id',
         'reward_id',
-        'staking_id',
+        'policy_id',
         'status',
-        'amount',
+        'coin_amount',
+        'refund_coin_amount',
+        'node_amount',
+        'exchange_rate',
         'period',
+        'reward_count',
         'started_at',
         'ended_at',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:9',
+        'coin_amount' => 'decimal:9',
+        'refund_coin_amount' => 'decimal:9',
+        'node_amount' => 'decimal:9',
+        'exchange_rate' => 'decimal:9',
     ];
 
     protected $appends = [
         'status_text',
     ];
-    
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -50,7 +57,7 @@ class Mining extends Model
 
     public function policy()
     {
-        return $this->belongsTo(StakingPolicy::class, 'staking_id', 'id');
+        return $this->belongsTo(MiningPolicy::class, 'policy_id', 'id');
     }
 
     public function refunds()

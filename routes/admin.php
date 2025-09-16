@@ -28,9 +28,6 @@ use App\Http\Controllers\Admin\Income\PolicyController as IncomePolicyController
 use App\Http\Controllers\Admin\Trading\TradingController;
 use App\Http\Controllers\Admin\Trading\PolicyController as TradingPolicyController;
 
-use App\Http\Controllers\Admin\Staking\StakingController;
-use App\Http\Controllers\Admin\Staking\PolicyController as StakingPolicyController;
-
 use App\Http\Controllers\Admin\Mining\MiningController;
 use App\Http\Controllers\Admin\Mining\PolicyController as MiningPolicyController;
 
@@ -38,9 +35,6 @@ use App\Http\Controllers\Admin\Board\BoardController;
 use App\Http\Controllers\Admin\Board\PostController;
 use App\Http\Controllers\Admin\Board\CommentController;
 
-use App\Http\Controllers\Admin\Policy\PolicyController;
-
-use App\Http\Controllers\Admin\Language\MessageController;
 use App\Http\Controllers\Admin\Language\LanguageController;
 
 use App\Http\Controllers\Admin\Manager\ManagerController;
@@ -152,19 +146,6 @@ Route::middleware(['admin.auth', 'otp'])->group(function () {
                     Route::get('/', [TradingPolicyController::class, 'index'])->name('admin.trading.policy');
                     Route::post('update', [TradingPolicyController::class, 'update'])->name('admin.trading.policy.update');
                     Route::get('export', [TradingPolicyController::class, 'export'])->name('admin.trading.policy.export');
-                });
-            });
-        });
-
-        Route::prefix('staking')->group(function () {
-            Route::get('list', [StakingController::class, 'list'])->name('admin.staking.list');
-            Route::middleware(['check_admin_level:3'])->group(function () {
-                Route::prefix('policy')->group(function () {
-                    Route::get('/', [StakingPolicyController::class, 'index'])->name('admin.staking.policy');
-                    Route::get('export', [StakingPolicyController::class, 'export'])->name('admin.staking.policy.export');
-                    Route::get('{mode}/{id?}', [StakingPolicyController::class, 'view'])->name('admin.staking.policy.view');
-                    Route::post('store', [StakingPolicyController::class, 'store'])->name('admin.staking.policy.store');
-                    Route::post('update', [StakingPolicyController::class, 'update'])->name('admin.staking.policy.update');
                 });
             });
         });

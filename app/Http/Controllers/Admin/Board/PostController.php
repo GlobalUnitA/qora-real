@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Services\S3Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,13 @@ use Carbon\Carbon;
 
 class PostController extends Controller
 {
+    protected S3Service $s3Service;
+
+    public function __construct(S3Service $s3Service)
+    {
+        $this->s3Service = $s3Service;
+    }
+
     public function list(Request $request)
     {
         $boards = Board::all();
@@ -38,7 +46,7 @@ class PostController extends Controller
         })
         ->where('board_id', $selected_board->id)
         ->orderBy('posts.created_at', 'desc')
-        ->paginate(10); 
+        ->paginate(10);
 
         $list->appends(request()->all());
 
@@ -57,7 +65,15 @@ class PostController extends Controller
         $mode = $request->mode;
         $board = Board::where('board_code', $request->code)->first();
         $view = Post::find($request->id);
-        
+
+        $download_urls = null;
+        if (!empty($view->image_urls)) {
+            foreach ($view->image_urls as $image_url) {
+                if (!$image_url) continue;
+                $download_urls[] = $this->s3Service->generateDownloadUrl($image_url, 600);
+            }
+        }
+
         if($mode == 'view') {
             $user = User::find($view->user_id);
             $comments = Comment::where('board_id', $board->id)
@@ -70,9 +86,11 @@ class PostController extends Controller
                 'view' => $view,
                 'user' => $user,
                 'comments' => $comments,
+                'download_urls' => $download_urls,
             ];
-       
+
             return view('admin.board.post-view', $data);
+
         } else if($mode == 'comment') {
             $user = User::find($view->user_id);
             $comments = Comment::where('board_id', $board->id)
@@ -85,6 +103,7 @@ class PostController extends Controller
                 'view' => $view,
                 'user' => $user,
                 'comments' => $comments,
+                'download_urls' => $download_urls,
             ];
 
             return view('admin.board.comment', $data);
@@ -104,34 +123,12 @@ class PostController extends Controller
     public function write(Request $request)
     {
         $content = $request->input('content');
-        $uploaded = $request->input('image_urls', []);
+        $file_url = array_filter($request->input('file_key', []));
+
         $board = Board::find($request->board_id);
-        $used_content = $this->extractImageUrlsFromContent($content);
-        $final_images = [];
-
-        foreach ($used_content as $url) {
-            if (str_contains($url, '/uploads/tmp/')) {
-                $relative_tmp = str_replace(asset('storage') . '/', '', $url);
-                $new_path = str_replace('uploads/tmp/', 'uploads/post/', $relative_tmp);
-
-                if (Storage::disk('public')->exists($relative_tmp)) {
-                    Storage::disk('public')->move($relative_tmp, $new_path);
-                }
-
-                $new_url = asset('storage/' . $new_path);
-                $content = str_replace($url, $new_url, $content);
-
-                $content = preg_replace('/<img(.*?)src=["\']' . preg_quote($new_url, '/') . '["\'](.*?)>/', 
-                '<img$1src="' . $new_url . '"$2 style="width:100%">', $content);
-
-                $final_images[] = $new_url;
-            } else {
-                $final_images[] = $url;
-            }
-        }
 
         DB::beginTransaction();
-    
+
         try{
 
             $is_popup = $request->has('is_popup') ? $request->is_popup : 'n';
@@ -142,11 +139,11 @@ class PostController extends Controller
                 'board_id' => $board->id,
                 'subject' => $request->subject,
                 'content' => $content,
-                'image_urls' => $final_images,
+                'image_urls' => $file_url,
                 'is_popup' => $is_popup,
-                'is_banner' => $is_banner,         
+                'is_banner' => $is_banner,
             ]);
-    
+
             DB::commit();
 
             return response()->json([
@@ -156,7 +153,7 @@ class PostController extends Controller
             ]);
 
         } catch (Exception $e) {
-          
+
             DB::rollBack();
 
             \Log::error('Failed to write post', ['error' => $e->getMessage()]);
@@ -165,7 +162,7 @@ class PostController extends Controller
                 'status' => 'error',
                 'message' => '예기치 못한 오류가 발생했습니다.',
             ]);
-        }        
+        }
     }
 
 
@@ -197,7 +194,7 @@ class PostController extends Controller
 
                         $content = str_replace($url, $new_url, $content);
 
-                        $content = preg_replace('/<img(.*?)src=["\']' . preg_quote($new_url, '/') . '["\'](.*?)>/', 
+                        $content = preg_replace('/<img(.*?)src=["\']' . preg_quote($new_url, '/') . '["\'](.*?)>/',
                         '<img$1src="' . $new_url . '"$2 style="width:100%">', $content);
 
                         $final_images[] = $new_url;
@@ -207,7 +204,7 @@ class PostController extends Controller
                 }
 
                 if ($existing_images) {
-                    $images_to_delete = array_diff($existing_images, $final_images); 
+                    $images_to_delete = array_diff($existing_images, $final_images);
 
                     foreach ($images_to_delete as $image_to_delete) {
                         $relative_path = str_replace(asset('storage'), 'public', $image_to_delete);
@@ -222,7 +219,7 @@ class PostController extends Controller
 
                 $post->update([
                     'subject' => $request->subject,
-                    'content' => $content,  
+                    'content' => $content,
                     'image_urls' => $final_images,
                     'is_popup' => $is_popup,
                     'is_banner' => $is_banner,
