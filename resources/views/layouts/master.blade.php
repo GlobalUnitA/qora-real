@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @stack('meta')
-    <link rel="icon" type="image/png" href="{{ asset('images/logos/emblem.png') }}" size="32x32">
+    <link rel="icon" type="image/png" href="{{ asset('images/logos/symbol.png') }}" size="32x32">
     <script src="{{ asset('js/theme_set.js') }}"></script>
     <link rel="stylesheet" href="{{ asset('css/styles.min.css') }}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
@@ -14,24 +14,24 @@
 </head>
 <body class="p-0">
 
-    <div class="layoutContainer container min-vh-100 overflow-hidden px-0 bg-body border border-sm-0 layout-padding">
-        @if(Auth::check() && !Request::is('register*'))
-            @include('layouts.header')
-        @endif
+<div class="layoutContainer container min-vh-100 overflow-hidden px-0 bg-body border border-sm-0 layout-padding">
+    @if(Auth::check() && !Request::is('register*'))
+        @include('layouts.header')
+    @endif
 
-        <div class="contentContainer">
-            @yield('content')
-        </div>
-
-        @if(Auth::check() && !Request::is('register*'))
-            @include('layouts.footer')
-        @endif
+    <div class="contentContainer">
+        @yield('content')
     </div>
 
-    @include('components.alert-form')
-    @include('components.confirm-form')
+    @if(Auth::check() && !Request::is('register*'))
+        @include('layouts.footer')
+    @endif
+</div>
 
-    @if(!empty($popups))
+@include('components.alert-form')
+@include('components.confirm-form')
+
+@if(!empty($popups))
     @foreach($popups as $popup)
         @php
             $popup_data = json_decode($popup->content);
