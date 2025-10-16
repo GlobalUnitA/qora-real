@@ -71,7 +71,10 @@ class MiningController extends Controller
         $reward = Income::where('user_id', auth()->id())->where('coin_id', $policy->reward_coin_id)->first();
 
         if ($asset->balance < $request->coin_amount) {
-            throw new \Exception(__('asset.lack_balance_notice'));
+            return response()->json([
+                'status' => 'error',
+                'message' =>  __('asset.lack_balance_notice'),
+            ]);
         }
 
         DB::beginTransaction();
