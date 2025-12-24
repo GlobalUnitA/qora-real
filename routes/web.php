@@ -42,7 +42,7 @@ use App\Http\Controllers\Proc\LanguageController;
 use App\Http\Controllers\Proc\PopupController;
 use App\Http\Controllers\Proc\FileUploadController;
 
-Route::get('test', [TestController::class, 'index'])->name('test');
+//Route::get('test', [TestController::class, 'index'])->name('test');
 
 Route::get('register/terms', [RegisterController::class, 'terms'])->name('register.terms');
 Route::get('register/{mid?}', [RegisterController::class, 'index'])->name('register');
@@ -145,7 +145,7 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
         });
         Route::prefix('withdrawal')->group(function () {
             //Route::middleware(['otp'])->group(function () {
-                Route::get('/', [IncomeWithdrawalController::class, 'index'])->name('income.withdrawal');
+            Route::get('/', [IncomeWithdrawalController::class, 'index'])->name('income.withdrawal');
             //});
             Route::post('store', [IncomeWithdrawalController::class, 'store'])->name('income.withdrawal.store');
             Route::get('complete/{id}', [IncomeWithdrawalController::class, 'complete'])->name('income.withdrawal.complete');
